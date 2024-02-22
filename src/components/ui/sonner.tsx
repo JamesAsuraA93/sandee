@@ -19,15 +19,15 @@ const Toaster = ({ ...props }: ToasterProps) => {
             "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
           cancelButton:
             "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
-          error:
-            "group-[.toast]:bg-destructive group-[.toast]:text-destructive-foreground",
-          default:
-            "group-[.toast]:bg-background group-[.toast]:text-foreground group-[.toast]:border-border group-[.toast]:shadow-lg",
-          info: "group-[.toast]:bg-info group-[.toast]:text-info-foreground",
           success:
-            "group-[.toast]:bg-success group-[.toast]:text-success-foreground",
+            "group toast group-[.toaster]:bg-success-foreground group-[.toaster]:text-success group-[.toaster]:border-success group-[.toaster]:shadow-lg",
+          error:
+            "group toast group-[.toaster]:bg-destructive-foreground group-[.toaster]:text-destructive group-[.toaster]:border-destructive group-[.toaster]:shadow-lg",
+          info: "group toast group-[.toaster]:bg-info-foreground group-[.toaster]:text-info group-[.toaster]:border-info group-[.toaster]:shadow-lg",
           warning:
-            "group-[.toast]:bg-warning group-[.toast]:text-warning-foreground",
+            "group toast group-[.toaster]:bg-warning-foreground group-[.toaster]:text-warning group-[.toaster]:border-warning group-[.toaster]:shadow-lg",
+          default:
+            "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
         },
       }}
       {...props}

@@ -1,4 +1,5 @@
 import Provider from "@/components/common/layout/Provider";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -16,9 +17,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getAccessToken } from "@/system/helpers/token";
 import { CalendarIcon, FileIcon, MinusIcon } from "@radix-ui/react-icons";
+import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import { useRouter } from "next/router";
+import React, { useEffect } from "react";
+import { toast } from "sonner";
 
 export default function Upload() {
   const [lasFileInput, setLasFileInput] = React.useState<{
@@ -40,6 +45,61 @@ export default function Upload() {
     urlOne: "",
     urlTwo: "",
   });
+
+  // useEffect(() => {
+  //   return () => {
+  //     if (lasFileInput.file) {
+  //       URL.revokeObjectURL(lasFileInput.url);
+  //     }
+  //     if (lasFileRangeInput.fileOne) {
+  //       URL.revokeObjectURL(lasFileRangeInput.urlOne);
+  //     }
+  //     if (lasFileRangeInput.fileTwo) {
+  //       URL.revokeObjectURL(lasFileRangeInput.urlTwo);
+  //     }
+  //   };
+  // }, []);
+
+  // check auth from cookie
+
+  const router = useRouter();
+
+  useEffect(() => {
+    // check auth from cookie
+    const token = getAccessToken();
+
+    if (!token) {
+      // redirect to login page
+      router.push("/auth/login");
+    }
+  }, [router]);
+
+  const [isCalculate, setIsCalculate] = React.useState(false);
+
+  const onCalculate = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 20000));
+  };
+
+  const onSubmit = async () => {
+    if (!lasFileInput.file) {
+      toast.error("Please upload a file");
+      return;
+    }
+
+    // waiting 2 seconds
+    toast.promise(onCalculate(), {
+      loading: "Calculating...",
+      success: () => {
+        setIsCalculate(true);
+        return "Calculation completed";
+      },
+      error: () => {
+        setIsCalculate(false);
+        return "Error occurred";
+      },
+    });
+  };
+
   return (
     <Provider>
       <div className="p-10">
@@ -48,7 +108,7 @@ export default function Upload() {
             <CardTitle className="text-2xl">Upload LAS Zone</CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="single" className="w-[700px] py-4">
+            <Tabs defaultValue="single" className="max-w-[700px] py-4">
               <TabsList className="w-full">
                 <TabsTrigger className="w-full" value="single">
                   single
@@ -81,19 +141,37 @@ export default function Upload() {
                               file,
                               url: URL.createObjectURL(file),
                             });
+                            toast.success("File uploaded successfully");
+                          } else {
+                            toast.error("File not uploaded");
                           }
                         }}
                       />
                     </div>
                     <div className="flex items-center space-x-2">
                       <FileIcon className="w-6 h-6 opacity-50" />
-                      <Link href="#">View file</Link>
+                      <Link href="#" className="truncate  max-w-[10rem]">
+                        View file : {lasFileInput.url}
+                      </Link>
                     </div>
-                    <div className="w-full aspect-[16/9] border-dashed border-2 border-gray-200 rounded-lg flex items-center justify-center text-2xl font-semibold">
-                      Image display here
-                    </div>
-                    <Button type="button" variant="outline">
-                      Upload
+                    {isCalculate ? (
+                      <div className="w-full relative min-h-[20rem]">
+                        <AspectRatio ratio={16 / 9}>
+                          <Image
+                            src="/temp/temp.png"
+                            alt="Image"
+                            className="rounded-md object-cover"
+                            fill
+                          />
+                        </AspectRatio>
+                      </div>
+                    ) : (
+                      <div className="w-full aspect-[16/9] border-dashed border-2 border-gray-200 rounded-lg flex items-center justify-center text-2xl font-semibold">
+                        Image display here
+                      </div>
+                    )}
+                    <Button type="button" variant="outline" onClick={onSubmit}>
+                      Submit file and Calculate
                     </Button>
                   </CardContent>
                 </Card>
@@ -107,9 +185,11 @@ export default function Upload() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="flex flex-row gap-2 items-end">
+                    <div className="flex flex-col md:flex-row gap-2 items-start md:items-end">
                       <div className="grid w-full max-w-sm items-center gap-2 pt-3">
-                        <Label htmlFor="single">Please Input LAS File</Label>
+                        <Label htmlFor="single">
+                          Please Input LAS File {`(Start)`}
+                        </Label>
                         <Input
                           accept=".las"
                           id="single"
@@ -126,9 +206,11 @@ export default function Upload() {
                           }}
                         />
                       </div>
-                      <span className="pb-2">and</span>
+                      <span className="pb-2 hidden md:block">and</span>
                       <div className="grid w-full max-w-sm items-center gap-2 pt-3">
-                        <Label htmlFor="single">Please Input LAS File</Label>
+                        <Label htmlFor="single">
+                          Please Input LAS File {`(End)`}
+                        </Label>
                         <Input
                           accept=".las"
                           id="single"
@@ -147,11 +229,11 @@ export default function Upload() {
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-col md:flex-row items-center gap-2">
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
-                            className="w-[200px] justify-start text-left"
+                            className="w-full justify-start text-left"
                             variant="outline"
                           >
                             <CalendarIcon className="mr-1 h-4 w-4 -translate-x-1" />
@@ -162,11 +244,11 @@ export default function Upload() {
                           <Calendar mode="range" numberOfMonths={2} />
                         </PopoverContent>
                       </Popover>
-                      <MinusIcon className="h-4 w-4 opacity-50" />
+                      <MinusIcon className="h-4 w-4 opacity-50 hidden md:flex" />
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
-                            className="w-[200px] justify-start text-left"
+                            className="w-full justify-start text-left"
                             variant="outline"
                           >
                             <CalendarIcon className="mr-1 h-4 w-4 -translate-x-1" />
@@ -182,7 +264,7 @@ export default function Upload() {
                       <FileIcon className="w-6 h-6 opacity-50" />
                       <Link href="#">View file</Link>
                     </div>
-                    <div className="grid-cols-2 gap-2 grid">
+                    <div className="grid-cols-1 md:grid-cols-2 gap-2 grid">
                       <div className="w-full aspect-[16/9] border-dashed border-2 border-gray-200 rounded-lg flex items-center justify-center text-2xl font-semibold">
                         Image display here
                       </div>
@@ -191,7 +273,7 @@ export default function Upload() {
                       </div>
                     </div>
                     <Button type="button" variant="outline">
-                      Upload
+                      Submit file and Calculate
                     </Button>
                   </CardContent>
                 </Card>

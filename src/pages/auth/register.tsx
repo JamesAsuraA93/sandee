@@ -24,12 +24,15 @@ import { useRouter } from "next/router";
 const formSchema = z.object({
   name: z.string().min(2).max(50),
   email: z.string().email(),
-  password: z.string().min(8).max(50),
-  // .refine((val) => {
-  //   return val.match(/[a-z]/) && val.match(/[A-Z]/) && val.match(/[0-9]/) && val.match(/[!@#$%^&*()_+]/);
-  // }
-  // )
-
+  password: z.string().min(8).max(50).refine(val => {
+    
+    return (
+      val.match(/[a-z]/) !== null && // ต้องมีตัวอักษรตัวพิมพ์เล็กอย่างน้อย 1 ตัว
+      val.match(/[A-Z]/) !== null && // ต้องมีตัวอักษรตัวพิมพ์ใหญ่อย่างน้อย 1 ตัว
+      val.match(/[0-9]/) !== null && // ต้องมีตัวเลขอย่างน้อย 1 ตัว
+      val.match(/[!@#$%^&*()_+]/) !== null // ต้องมีตัวอักษรพิเศษอย่างน้อย 1 ตัว
+    );
+  },{message: "Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character"}),
   confirmPassword: z.string().min(8).max(50),
   confirmTerms: z.boolean(),
 });

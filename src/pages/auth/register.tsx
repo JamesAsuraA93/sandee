@@ -27,10 +27,10 @@ const formSchema = z.object({
   password: z.string().min(8).max(50).refine(val => {
     
     return (
-      val.match(/[a-z]/) !== null && // ต้องมีตัวอักษรตัวพิมพ์เล็กอย่างน้อย 1 ตัว
-      val.match(/[A-Z]/) !== null && // ต้องมีตัวอักษรตัวพิมพ์ใหญ่อย่างน้อย 1 ตัว
-      val.match(/[0-9]/) !== null && // ต้องมีตัวเลขอย่างน้อย 1 ตัว
-      val.match(/[!@#$%^&*()_+]/) !== null // ต้องมีตัวอักษรพิเศษอย่างน้อย 1 ตัว
+      val.match(/[a-z]/) !== null && 
+      val.match(/[A-Z]/) !== null && 
+      val.match(/[0-9]/) !== null && 
+      val.match(/[!@#$%^&*()_+]/) !== null 
     );
   },{message: "Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character"}),
   confirmPassword: z.string().min(8).max(50),

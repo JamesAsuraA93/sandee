@@ -25,6 +25,11 @@ const formSchema = z.object({
   name: z.string().min(2).max(50),
   email: z.string().email(),
   password: z.string().min(8).max(50),
+  // .refine((val) => {
+  //   return val.match(/[a-z]/) && val.match(/[A-Z]/) && val.match(/[0-9]/) && val.match(/[!@#$%^&*()_+]/);
+  // }
+  // )
+
   confirmPassword: z.string().min(8).max(50),
   confirmTerms: z.boolean(),
 });

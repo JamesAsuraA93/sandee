@@ -17,6 +17,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import LasUploadConfig from "@/components/user/LasUploadConfig";
 import { getAccessToken } from "@/system/helpers/token";
 import { CalendarIcon, FileIcon, MinusIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
@@ -76,8 +77,23 @@ export default function Upload() {
 
   const [isCalculate, setIsCalculate] = React.useState(false);
 
+  const [dataFile, setDataFile] = React.useState<{
+    file: File | null;
+    url: string;
+  }>({
+    file: null,
+    url: "",
+  });
+
   const onCalculate = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 20000));
+    await new Promise((resolve) => {
+      setTimeout(resolve, 20000);
+    });
+
+    await setDataFile({
+      file: lasFileInput.file,
+      url: lasFileInput.url,
+    });
   };
 
   const onSubmit = async () => {
@@ -100,6 +116,8 @@ export default function Upload() {
     });
   };
 
+  const [tab, setTab] = React.useState<"single" | "range">("single");
+
   return (
     <Provider>
       <div className="p-10">
@@ -107,8 +125,12 @@ export default function Upload() {
           <CardHeader className="pb-0">
             <CardTitle className="text-2xl">Upload LAS Zone</CardTitle>
           </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="single" className="max-w-[700px] py-4">
+          <CardContent className="flex flex-row w-full gap-4">
+            <Tabs
+              value={tab}
+              className="max-w-[700px] py-4 w-full"
+              onValueChange={(value) => setTab(value as "single" | "range")}
+            >
               <TabsList className="w-full">
                 <TabsTrigger className="w-full" value="single">
                   single
@@ -279,6 +301,16 @@ export default function Upload() {
                 </Card>
               </TabsContent>
             </Tabs>
+
+            {tab == "single" && (
+              <LasUploadConfig
+                data={{
+                  main:
+                    ((dataFile.file?.lastModified || 0) * 0.025363) / 100000,
+                  volume: dataFile.file?.size || 0,
+                }}
+              />
+            )}
           </CardContent>
         </Card>
       </div>

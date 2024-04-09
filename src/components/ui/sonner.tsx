@@ -22,7 +22,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
           success:
             "group toast group-[.toaster]:bg-success-foreground group-[.toaster]:text-success group-[.toaster]:border-success group-[.toaster]:shadow-lg",
           error:
-            "group toast group-[.toaster]:bg-destructive-foreground group-[.toaster]:text-destructive group-[.toaster]:border-destructive group-[.toaster]:shadow-lg",
+            "group toast group-[.toaster]:bg-red-foreground group-[.toaster]:text-red group-[.toaster]:border-red group-[.toaster]:shadow-lg",
+
           info: "group toast group-[.toaster]:bg-info-foreground group-[.toaster]:text-info group-[.toaster]:border-info group-[.toaster]:shadow-lg",
           warning:
             "group toast group-[.toaster]:bg-warning-foreground group-[.toaster]:text-warning group-[.toaster]:border-warning group-[.toaster]:shadow-lg",

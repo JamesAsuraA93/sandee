@@ -38,7 +38,7 @@ export default function Provider(props: Props) {
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
-      <header className="px-4 lg:px-6 h-14 flex items-center border-b shadow-md fixed top-0 w-full bg-slate-100">
+      <header className="px-4 lg:px-6 h-14 flex items-center border-b shadow-md fixed top-0 w-full bg-slate-100 z-50">
         <Link className="flex items-center justify-center gap-2" href="/">
           <MountainIcon className="h-6 w-6" />
           <span className="sr-only">Sandee Inc</span>

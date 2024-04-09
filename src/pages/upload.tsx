@@ -47,6 +47,13 @@ export default function Upload() {
     urlTwo: "",
   });
 
+  const [historyFileUpload, setHistoryFileUpload] = React.useState<
+    {
+      oldFile: File | null;
+      computedFile: File | null;
+    }[]
+  >([]);
+
   // useEffect(() => {
   //   return () => {
   //     if (lasFileInput.file) {
@@ -87,7 +94,7 @@ export default function Upload() {
 
   const onCalculate = async () => {
     await new Promise((resolve) => {
-      setTimeout(resolve, 20000);
+      setTimeout(resolve, 10000);
     });
 
     await setDataFile({
@@ -107,6 +114,23 @@ export default function Upload() {
       loading: "Calculating...",
       success: () => {
         setIsCalculate(true);
+        if (lasFileInput.file) {
+          setHistoryFileUpload([
+            ...historyFileUpload,
+            {
+              oldFile: lasFileInput.file,
+              computedFile: null,
+            },
+          ]);
+        }
+        // setHistoryFileUpload([
+        //   ...historyFileUpload,
+        //   {
+        //     oldFile: lasFileInput.file,
+        //     computedFile: dataFile.file,
+        //   },
+        // ]);
+
         return "Calculation completed";
       },
       error: () => {
@@ -139,7 +163,7 @@ export default function Upload() {
                   range
                 </TabsTrigger>
               </TabsList>
-              <TabsContent value="single">
+              <TabsContent value="single" className="space-y-2">
                 <Card>
                   <CardHeader className="pb-0">
                     <CardTitle className="text-2xl">
@@ -195,6 +219,92 @@ export default function Upload() {
                     <Button type="button" variant="outline" onClick={onSubmit}>
                       Submit file and Calculate
                     </Button>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-0">
+                    <CardTitle className="text-2xl">
+                      List of Uploaded Files
+                    </CardTitle>
+                    <CardDescription>
+                      List of uploaded files. Original file and computed file.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid w-full max-w-sm items-center gap-2 pt-3 grid-flow-row">
+                      {historyFileUpload.map((file, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center space-x-2"
+                        >
+                          <div className="flex flex-col items-start gap-2">
+                            <div className="flex flex-row items-center gap-1">
+                              <FileIcon className="w-6 h-6 z-0" />
+                              <h4>Original File {index + 1}</h4>
+                            </div>
+                            {/* <h4>Original File {index + 1}</h4>
+                            <FileIcon className="w-6 h-6 z-0" /> */}
+                            <Link href="#" className="truncate  max-w-[10rem]">
+                              View file : {file.oldFile?.name}
+                            </Link>
+
+                            {/* download */}
+                            <Button
+                              type="button"
+                              onClick={() => {
+                                if (!file.oldFile) {
+                                  return;
+                                }
+                                const url = URL.createObjectURL(file.oldFile);
+                                const a = document.createElement("a");
+                                a.href = url;
+                                a.download = file.oldFile.name;
+                                a.click();
+                                URL.revokeObjectURL(url);
+                              }}
+                            >
+                              Download Original File
+                            </Button>
+                          </div>
+
+                          {file.computedFile && (
+                            <div className="flex flex-col items-start gap-2">
+                              <div className="flex flex-row items-center gap-1">
+                                <FileIcon className="w-6 h-6 z-0" />
+                                <h4>Computed File {index + 1}</h4>
+                              </div>
+                              <Link
+                                href="#"
+                                className="truncate  max-w-[10rem]"
+                              >
+                                View file : {file.computedFile?.name}
+                              </Link>
+
+                              {/* download */}
+                              <Button
+                                type="button"
+                                onClick={() => {
+                                  if (!file.computedFile) {
+                                    return;
+                                  }
+                                  const url = URL.createObjectURL(
+                                    file.computedFile
+                                  );
+                                  const a = document.createElement("a");
+                                  a.href = url;
+                                  a.download = file.computedFile.name;
+                                  a.click();
+                                  URL.revokeObjectURL(url);
+                                }}
+                              >
+                                Download Computed File
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -301,14 +411,13 @@ export default function Upload() {
                 </Card>
               </TabsContent>
             </Tabs>
-
             {tab == "single" && (
               <LasUploadConfig
-                data={{
-                  main:
-                    ((dataFile.file?.lastModified || 0) * 0.025363) / 100000,
-                  volume: dataFile.file?.size || 0,
+                listFile={historyFileUpload}
+                onClickCalculateNoise={(fileList) => {
+                  setHistoryFileUpload(fileList);
                 }}
+                file={lasFileInput.file}
               />
             )}
           </CardContent>

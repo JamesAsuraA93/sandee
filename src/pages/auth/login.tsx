@@ -1,10 +1,10 @@
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
 
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
+
+import Provider from "@/components/common/layout/Provider";
 import {
   Form,
   FormControl,
@@ -13,12 +13,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import Provider from "@/components/common/layout/Provider";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { toast } from "sonner";
-import axios from "axios";
 import { setAccessToken } from "@/system/helpers/token";
+import axios from "axios";
 import { useRouter } from "next/router";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   email: z.string().email("Invalid email"),
@@ -89,14 +92,15 @@ export default function Login() {
         if (value.status !== 200) {
           return "An error occurred";
         }
-
         setAccessToken(value.data.token);
         router.push("/upload");
-        return "Registered successfully";
+        return "Loging done..";
       },
       error: "An error occurred",
     });
   }
+
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <Provider>
@@ -133,11 +137,26 @@ export default function Login() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Password"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          // type="password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Password"
+                          {...field}
+                        />
+
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                        >
+                          {showPassword ? (
+                            <EyeOffIcon className="h-5 w-5" />
+                          ) : (
+                            <EyeIcon className="h-5 w-5" />
+                          )}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

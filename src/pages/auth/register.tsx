@@ -1,11 +1,6 @@
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import Link from "next/link";
+import Provider from "@/components/common/layout/Provider";
 import { Button } from "@/components/ui/button";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -14,25 +9,40 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import Provider from "@/components/common/layout/Provider";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import axios from "axios";
-import { toast } from "sonner";
 import { setAccessToken } from "@/system/helpers/token";
+import axios from "axios";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useRouter } from "next/router";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   name: z.string().min(2).max(50),
   email: z.string().email(),
-  password: z.string().min(8).max(50).refine(val => {
-    
-    return (
-      val.match(/[a-z]/) !== null && 
-      val.match(/[A-Z]/) !== null && 
-      val.match(/[0-9]/) !== null && 
-      val.match(/[!@#$%^&*()_+]/) !== null 
-    );
-  },{message: "Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character"}),
+  password: z
+    .string()
+    .min(8)
+    .max(50)
+    .refine(
+      (val) => {
+        return (
+          val.match(/[a-z]/) !== null &&
+          val.match(/[A-Z]/) !== null &&
+          val.match(/[0-9]/) !== null &&
+          val.match(/[!@#$%^&*()_+]/) !== null
+        );
+      },
+      {
+        message:
+          "Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character",
+      }
+    ),
   confirmPassword: z.string().min(8).max(50),
   confirmTerms: z.boolean(),
 });
@@ -120,9 +130,11 @@ export default function Register() {
     });
   }
 
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <Provider>
-      <div className="flex items-center min-h-screen px-4 sm:px-6 lg:px-8">
+      <div className="flex items-center min-h-screen px-4 sm:px-6 lg:px-8 pt-8">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -170,7 +182,27 @@ export default function Register() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="Password" {...field} />
+                    <div className="relative">
+                      <Input
+                        //  type="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Password"
+                        {...field}
+                      />
+                      {
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                        >
+                          {showPassword ? (
+                            <EyeOffIcon className="h-5 w-5" />
+                          ) : (
+                            <EyeIcon className="h-5 w-5" />
+                          )}
+                        </button>
+                      }
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -184,7 +216,27 @@ export default function Register() {
                 <FormItem>
                   <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="Password" {...field} />
+                    <div className="relative">
+                      <Input
+                        // type="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Password"
+                        {...field}
+                      />
+                      {
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                        >
+                          {showPassword ? (
+                            <EyeOffIcon className="h-5 w-5" />
+                          ) : (
+                            <EyeIcon className="h-5 w-5" />
+                          )}
+                        </button>
+                      }
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
